@@ -1,36 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  
-  <!-- Favicon / Site Icon -->
+
+  <!-- Favicon / Site Icon (relative path) -->
   <link 
     rel="icon" 
-    href="assets/images/personal_logo.png" 
+    href="../images/personal_logo.png" 
     type="image/png"
-  />
-
-  <!-- Font Awesome (optional icons) -->
-  <link 
-    rel="stylesheet" 
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
   />
 
   <!-- Orbitron font -->
   <link 
     rel="preconnect" 
     href="https://fonts.gstatic.com" 
-    crossorigin 
+    crossorigin
   />
   <link 
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" 
     rel="stylesheet"
   />
+  
+  <title>The commander</title>
 
-  <title>Bitwise Blog</title>
-
-  <!-- Dark Mode snippet modifies <html> based on localStorage or defaults to dark -->
+  <!-- Dark Mode anti-flicker -->
   <script>
     (function() {
       const savedTheme = localStorage.getItem('bitwiseTheme') || 'dark';
@@ -43,23 +37,18 @@
   </script>
 </head>
 <body>
-<!-- 1) Guarantee <body> exists, then run sidebar script -->
 <script>
   (function() {
     const savedSidebar = localStorage.getItem('sidebarState') || 'expanded';
-    const toggleBtnId = "sidebarToggle";
-
+    const toggleBtnId  = "sidebarToggle";
+    
     if (savedSidebar === 'collapsed') {
-      // Collapsed: set body class
       document.body.classList.add('sidebar-collapsed');
-
-      // Try to set the button state now...
       const btn = document.getElementById(toggleBtnId);
       if (btn) {
         btn.classList.add('sidebar-closed');
         btn.classList.remove('sidebar-open');
       } else {
-        // Fallback if button not yet in DOM
         document.addEventListener('DOMContentLoaded', () => {
           const b = document.getElementById(toggleBtnId);
           if (b) {
@@ -69,7 +58,6 @@
         });
       }
     } else {
-      // expanded
       document.body.classList.remove('sidebar-collapsed');
       const btn = document.getElementById(toggleBtnId);
       if (btn) {
@@ -88,24 +76,24 @@
   })();
 </script>
 
-<!-- 2) main.js -->
-<script src="assets/js/main.js"></script>
-
-<!-- 3) main.css -->
-<link rel="stylesheet" href="assets/css/main.css" />
+<!-- main.js + main.css -->
+<script src="../js/main.js"></script>
+<link rel="stylesheet" href="../css/main.css"/>
 
 <!-- Star Canvas -->
 <canvas id="starCanvas"></canvas>
 
-<!-- Site Header -->
+<!-- Header -->
 <header class="site-header">
-  <h1 class="site-title"><a href="index.html">Bitwise</a></h1>
+  <h1 class="site-title">
+    <a href="../../index.html">Bitwise</a>
+  </h1>
   <h2 class="site-subtitle">& | ^ ~</h2>
 </header>
 
-<!-- Dark Mode Toggle Button -->
+<!-- Dark Mode Toggle -->
 <button id="modeToggle" class="mode-toggle-btn">
-  <svg 
+  <svg
     id="modeIcon"
     xmlns="http://www.w3.org/2000/svg"
     class="icon-24"
@@ -122,8 +110,8 @@
     <div class="search-row">
       <div class="search-container">
         <input 
-          type="text" 
-          id="searchInput" 
+          type="text"
+          id="searchInput"
           placeholder="Search articles..."
           aria-label="Search"
         />
@@ -140,9 +128,9 @@
   <div class="top-bar">
     <h3 class="top-bar-left">By Bill Edwards</h3>
     <button 
-      id="sortButton" 
-      type="button" 
-      class="sort-btn" 
+      id="sortButton"
+      type="button"
+      class="sort-btn"
       aria-label="Filter Articles"
     >
       <!-- funnel icon -->
@@ -177,7 +165,7 @@
     </button>
   </div>
 
-  <!-- Moved everything down with a margin-top wrapper -->
+  <!-- Same approach: move "Account", "More", and new Description down -->
   <div style="margin-top: 2rem;">
     <nav class="extra-links">
       <h3>Account</h3>
@@ -187,9 +175,9 @@
       <h3>More</h3>
       <ul>
         <li><a href="#">About Bill</a></li>
-        <li><a href="https://twitter.com/CashPrinter3000">X</a></li>
+        <li><a href="https://twitter.com/CashPrinter3000"">X</a></li>
       </ul>
-      <!-- Description Section Below "More" -->
+      <!-- Description Section -->
       <h3>Description</h3>
       <p>
         This site is to record the thoughts of Bill Edwards. Doesn't worth much because he knows jack shit.
@@ -198,16 +186,16 @@
   </div>
 </aside>
 
-<!-- Sidebar Toggle Button -->
+<!-- Sidebar Toggle -->
 <button 
-  id="sidebarToggle" 
-  class="sidebar-toggle-btn sidebar-open" 
+  id="sidebarToggle"
+  class="sidebar-toggle-btn sidebar-open"
   aria-label="Collapse Sidebar"
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none" 
-    viewBox="0 0 24 24" 
+    viewBox="0 0 24 24"
     stroke-width="1.5" 
     stroke="currentColor"
     class="icon-24"
@@ -220,33 +208,42 @@
   </svg>
 </button>
 
-<!-- Main Content -->
+<!-- Main Content: Article -->
 <main class="main-content" id="mainContent">
-  <section class="articles-section">
-    <!-- Article 1 -->
-    <div class="article-item" data-year="2025">
-      <a 
-        href="assets/articles/The_commander.html"
-        class="article-link"
-      >
-        <img src="assets/images/Commander.jpg" alt="Some Example" />
-        <h2>The commander</h2>
-      </a>
+  <article class="single-article">
+    <header class="entry-header">
+      <h1 class="entry-title">Example Article</h1>
+      <div class="entry-meta">
+        <time class="entry-date">March 10, 2025</time>
+        <span class="entry-author">by Bill Edwards</span>
+      </div>
+    </header>
+    <div class="entry-content">
+      <div id="Content">
+        <div id="Translation">
+
+          <!-- Sample Lorem Ipsum Content -->
+          <h3>The standard Lorem Ipsum passage, used since the 1500s</h3>
+          <p>
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. ..."
+          </p>
+
+          <h3>
+            Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
+          </h3>
+          <p>
+            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+            quae ab illo inventore veritatis et quasi architecto beatae vitae ..."
+          </p>
+
+          <!-- ... More content omitted for brevity ... -->
+
+        </div>
+      </div>
     </div>
-    <!-- Article 2 -->
-    <div class="article-item" data-year="2025">
-      <a 
-        href="assets/articles/A_new_generation.html"
-        class="article-link"
-      >
-        <img 
-          src="assets/images/A_new_generation.jpg" 
-          alt="A new generation" 
-        />
-        <h2>A new generation</h2>
-      </a>
-    </div>
-  </section>
+  </article>
 </main>
 
 <!-- Footer -->
