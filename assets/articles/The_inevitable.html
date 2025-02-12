@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Favicon / Site Icon (relative path) -->
+  <link 
+    rel="icon" 
+    href="../images/personal_logo.png" 
+    type="image/png"
+  />
+
+  <!-- Orbitron font -->
+  <link 
+    rel="preconnect" 
+    href="https://fonts.gstatic.com" 
+    crossorigin
+  />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" 
+    rel="stylesheet"
+  />
+  
+  <title>The inevitable</title>
+
+  <!-- Dark Mode anti-flicker -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('bitwiseTheme') || 'dark';
+      if (savedTheme === 'dark') {
+        document.documentElement.className = 'dark-mode';
+      } else {
+        document.documentElement.className = 'light-mode';
+      }
+    })();
+  </script>
+</head>
+<body>
+<script>
+  (function() {
+    const savedSidebar = localStorage.getItem('sidebarState') || 'expanded';
+    const toggleBtnId  = "sidebarToggle";
+    
+    if (savedSidebar === 'collapsed') {
+      document.body.classList.add('sidebar-collapsed');
+      const btn = document.getElementById(toggleBtnId);
+      if (btn) {
+        btn.classList.add('sidebar-closed');
+        btn.classList.remove('sidebar-open');
+      } else {
+        document.addEventListener('DOMContentLoaded', () => {
+          const b = document.getElementById(toggleBtnId);
+          if (b) {
+            b.classList.add('sidebar-closed');
+            b.classList.remove('sidebar-open');
+          }
+        });
+      }
+    } else {
+      document.body.classList.remove('sidebar-collapsed');
+      const btn = document.getElementById(toggleBtnId);
+      if (btn) {
+        btn.classList.add('sidebar-open');
+        btn.classList.remove('sidebar-closed');
+      } else {
+        document.addEventListener('DOMContentLoaded', () => {
+          const b = document.getElementById(toggleBtnId);
+          if (b) {
+            b.classList.add('sidebar-open');
+            b.classList.remove('sidebar-closed');
+          }
+        });
+      }
+    }
+  })();
+</script>
+
+<!-- main.js + main.css -->
+<script src="../js/main.js"></script>
+<link rel="stylesheet" href="../css/main.css"/>
+
+<!-- Star Canvas -->
+<canvas id="starCanvas"></canvas>
+
+<!-- Header -->
+<header class="site-header">
+  <h1 class="site-title">
+    <a href="../../index.html">Bitwise</a>
+  </h1>
+  <h2 class="site-subtitle">& | ^ ~</h2>
+</header>
+
+<!-- Dark Mode Toggle -->
+<button id="modeToggle" class="mode-toggle-btn">
+  <svg
+    id="modeIcon"
+    xmlns="http://www.w3.org/2000/svg"
+    class="icon-24"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+  ></svg>
+</button>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="search-filter-container">
+    <div class="search-row">
+      <div class="search-container">
+        <input 
+          type="text"
+          id="searchInput"
+          placeholder="Search articles..."
+          aria-label="Search"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div 
+    id="yearDropdown" 
+    class="year-dropdown" 
+    style="display: none;"
+  ></div>
+
+  <div class="top-bar">
+    <h3 class="top-bar-left">By Bill Edwards</h3>
+    <button 
+      id="sortButton"
+      type="button"
+      class="sort-btn"
+      aria-label="Filter Articles"
+    >
+      <!-- funnel icon -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="icon-24 filter-icon"
+      >
+        <path 
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M10.5 6h3m-7.5
+             0h-.75A2.25 2.25 0
+             003 8.25v.678c0
+             .414.162.81.452
+             1.103l5.098 5.098
+             c.291.291.45.687.45
+             1.1v2.271a1.125
+             1.125 0 001.688
+             .974l2.25-1.35a1.125
+             1.125 0 00.537-.974v-1.621
+             c0-.414.162-.81.452
+             -1.103l5.098-5.098
+             c.29-.294.452-.69.452
+             -1.103V8.25a2.25
+             2.25 0 00-2.25-2.25H6z"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Same approach: move "Account", "More", and new Description down -->
+  <div style="margin-top: 2rem;">
+    <nav class="extra-links">
+      <h3>Account</h3>
+      <ul>
+        <li><a href="#">Not done yet</a></li>
+      </ul>
+      <h3>More</h3>
+      <ul>
+        <li><a href="#">About Bill</a></li>
+        <li><a href="https://twitter.com/CashPrinter3000"">X</a></li>
+      </ul>
+      <!-- Description Section -->
+      <h3>Description</h3>
+      <p>
+        This site is to record the thoughts of Bill Edwards. Doesn't worth much because he knows jack shit.
+      </p>
+    </nav>
+  </div>
+</aside>
+
+<!-- Sidebar Toggle -->
+<button 
+  id="sidebarToggle"
+  class="sidebar-toggle-btn sidebar-open"
+  aria-label="Collapse Sidebar"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none" 
+    viewBox="0 0 24 24"
+    stroke-width="1.5" 
+    stroke="currentColor"
+    class="icon-24"
+  >
+    <path 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+      d="M15.75 19.5 8.25 12l7.5-7.5"
+    />
+  </svg>
+</button>
+
+<!-- Main Content: Article -->
+<main class="main-content" id="mainContent">
+  <article class="single-article">
+    <header class="entry-header">
+      <h1 class="entry-title">Example Article</h1>
+      <div class="entry-meta">
+        <time class="entry-date">March 10, 2025</time>
+        <span class="entry-author">by Bill Edwards</span>
+      </div>
+    </header>
+    <div class="entry-content">
+      <div id="Content">
+        <div id="Translation">
+
+          <p dir="ltr">
+            Not too long ago, the idea of machines surpassing human capabilities sounded
+            absurd. Today, that ‘absurdity’ is, in many cases, the reality. From
+            backoffices run by automated systems to factories run by automated robots,
+            automated machines have overtaken tasks once deemed the exclusive domain of
+            skilled professionals. In today’s world, most jobs are still done by humans.
+            The customer support you’re calling for a defect, the software engineer
+            coding the product you’re using right now, the creators of the content you
+            watch. Though done by humans today, that doesn’t mean it’ll still be the
+            case in the future. Technologies have a strong tendency to improve as time
+            goes by, and when they get good enough, they become an integral part of our
+            life without our consent.
+        </p>
+        <br/>
+        <p dir="ltr">
+            The Backroom Revolution
+        </p>
+        <p dir="ltr">
+            In the mid-20th century, banks, insurance companies, and government agencies
+            operated enormous “backrooms” staffed by clerks who manually typed, sorted,
+            and cross-referenced a sea of paperwork. Early computers—like IBM’s 650 or
+            the UNIVAC I—were bulky beasts costing hundreds of thousands of dollars.
+            Their punch-card systems were prone to jams, data corruption, and constant
+            mechanical breakdowns. Many executives scoffed at the idea that these
+            unreliable monstrosities could outperform a squad of well-trained clerks,
+            especially given that human workers were typically more flexible and cost
+            less than a massive mainframe plus its dedicated crew of technicians.
+        </p>
+        <p dir="ltr">
+            But over the following decades, exponential improvements in microprocessor
+            speeds, memory storage, and chip design radically changed the landscape. A
+            1960s IBM mainframe that filled an entire room offered less processing power
+            than a basic smartphone today. By the 1980s, large institutions were already
+            swapping out file cabinets for digital records, drastically reducing the
+            need for manual data entry. Today, data entries and maintenance were mainly
+            done through automated workflows. Large data centers hold servers after
+            servers to store data that companies collect around the globe, which makes
+            the idea of having a human to collect data manually and store it in a
+            cabinet now seems like a joke. The transformation to these automated back
+            office systems seem only natural.
+        </p>
+        <br/>
+        <p dir="ltr">
+            The Internet Revolution
+        </p>
+        <p dir="ltr">
+            Few inventions have been as transformative—or initially underestimated—as
+            the Internet. Conceived in the 1960s as part of the U.S. Department of
+            Defense’s ARPANET, it was originally a military-academic experiment,
+            designed for secure and resilient data exchange among a small group of
+            researchers. Early critics questioned the practicality of linking computers
+            across vast distances, suggesting it was too expensive, too specialized, and
+            too fraught with technical hurdles to become mainstream.
+        </p>
+        <p dir="ltr">
+            Over time, however, improvements in networking protocols (like TCP/IP), the
+            rise of the World Wide Web in the early 1990s, and the gradual drop in
+            computing costs turned the Internet into an unprecedented communication
+            superhighway. By 1995, it was estimated that around 16 million people
+            worldwide were using the Internet—a number that exploded to more than 300
+            million by 2000, and over 5 billion today. What started as a hard-to-access
+            system for government labs became a global lifeline, underpinning everything
+            from commerce and education to entertainment and social connectivity.
+        </p>
+        <p dir="ltr">
+            Along the way, it decimated industries reliant on older human-driven
+            models—travel agencies, classified ads, and countless middleman services
+            were replaced or reimagined as digital platforms. This technology that was
+            once deemed too “academic” and “niche” has reshaped how we work, learn, and
+            interact, changing our world completely. Today, the idea of borrowing books,
+            mailing letters, even to an extent, going to a movie theater, seems
+            impractical. The transformation to using the internet in our day to day
+            lives seems only natural.
+        </p>
+        <br/>
+        <p dir="ltr">
+            The Mobile revolution
+        </p>
+        <p dir="ltr">
+            While landline telephones were already fixtures in most households by the
+            late 20th century, mobile phones had a humbler and more skeptical start.
+            Early models were shaped like actual “bricks” with limited battery life,
+            geared primarily toward businesspeople who could shoulder the high cost.
+            Even the first BlackBerry devices in the early 2000s—lauded for secure
+            email—looked clunky and had tiny keyboards, prompting many consumers to
+            question how these miniature communication hubs could ever beat out laptops
+            or desktop computers.
+        </p>
+        <p dir="ltr">
+            Yet, as network speeds improved, hardware got smaller, and user interfaces
+            became more intuitive, smartphones grew into powerhouses that could check
+            emails, run sophisticated apps, browse the web, and even handle tasks once
+            impossible for a handheld device. Apple’s iPhone launch in 2007
+            revolutionized the entire mobile industry; within a few years, it displaced
+            older phone models and accelerated the smartphone’s global adoption. By
+            2011, smartphone sales had already overtaken PC sales worldwide—a decisive
+            signal that these once “impractical” or “business-only” devices had become
+            the primary tool for communications and productivity, once it became good
+            enough. Today, the idea of not owning a mobile phone itself makes you an
+            oddity. The transformation from clunky, costly “bricks” for a few to sleek,
+            indispensable companions for most now seems only natural.
+        </p>
+        <br/>
+        <p dir="ltr">
+            The ongoing AI revolution
+        </p>
+        <p dir="ltr">
+            All of these technologies started out impractical, costly, and unperformant.
+            But overtime, as innovations, computing power, chip designs manufacturing
+            progress, the technology becomes good enough and more use cases emerge,
+            replacing humans in many areas and creating jobs in more. Now, since the
+            emergence of ChatGPT in 2022, deep learning, or to most, Artificial
+            Intelligence, has become the newest—potentially most transformative wave
+            of—technology. It automates repetitive jobs, augments human work, and does
+            it all with a chat bot. It may not seem like it is ready to fully take jobs
+            from humans yet, but history has shown that with technology, it is only a
+            matter of time that it becomes “good enough”. And when it becomes good
+            enough, it will become our standard, without consent.
+        </p>
+        <p dir="ltr">
+            What AI is different from prior waves of technology innovation is that, in
+            its purest form, its goal is to outright replace humans, instead of
+            augmenting them. Why hire a human to use AI, when you can just hire an AI to
+            do the job? They currently lack intuition, so must be leveraged by a human
+            being sitting in front of a computer. Will this always be the case? With
+            time, won’t companies develop ways to remove the middleman—the human using
+            the AI—and simply pay for the AI to do the work? Ofcourse, this will take
+            time, and that is exactly the point. Enterprises will have to restructure
+            their companies or even their definition of jobs to work around the AI
+            agents they want to hire, and AI agents need to be built properly by the
+            software companies first. One day, it might not be humans using services on
+            the internet to finish tasks, it might be AI using services on the internet
+            to finish tasks, rendering large swaths of humanity useless. This is not a
+            fairy tale. The newly launched ChatGPT operator already has the ability to
+            use an internet browser and perform tasks—buying tickets, shopping for
+            groceries, making reservations—on the user's behalf. Though not close to
+            human level, these AIs are indeed, as its name, competing for the position
+            of the “operator”. It’s nice to have them doing these little tasks for you,
+            but you will not think that when it's coming for your job. If the above
+            histories tell us anything, it's that once the technology has been created,
+            it will only get better and better overtime.
+        </p>
+        <br/>
+        <p dir="ltr">
+            Accept and adapt
+        </p>
+        <p dir="ltr">
+            “Wow, we’re utterly fucked” might be a thought that passes through your
+            mind. I hope the understanding that with time, the computing cost will only
+            go down, and there will only be more, not less, innovations, will help you
+            accept the fact that AI really might one day replace your, and most other
+            human’s jobs. What we see now is a mere beginning, and it's scary enough.
+            Who knows. Maybe after twenty or thirty years, most of us will be on UBI
+            (Universal Basic Income) while only some doing very demanding jobs. Does
+            that mean you should stop working now and accept the fact that you’ll be
+            replaced? No! That day is not even close yet. If you are afraid of being
+            replaced by AI, in my opinion, there are four things that you can do.
+        </p>
+        <ol>
+            <li dir="ltr">
+                <p dir="ltr">
+                    1. Become the minds behind the development of AI <br/>
+                    Technology companies are pouring billions and billions of dollars to
+                    fight for the ones with great technical expertise. If you are good
+                    enough to become one of them, good for you! You’ll be part of the
+                    process towards the next age of humanity and get paid handsomely for
+                    that. Sadly, this is not the case for most, and probably not for
+                    you.
+                </p>
+            </li>
+            <li dir="ltr">
+                <p dir="ltr">
+                    2. Build a career in areas that will be hard to replaced by AI <br/>
+                    The issue with this option is that how do you decide which areas
+                    will be hard to replace? Any prediction entails the chance of being
+                    wrong. With that in mind, one choice is to pursue careers in
+                    esoteric fields that will take longer for AI to be better than you.
+                    Chip designers, Software engineers, Accountants, doctors. Low level
+                    positions of these fields might be replaced by AI, but if you can
+                    become one of the best, it’ll be a very hard and very long process
+                    for AIs to catch up to you! Next, outside of trying to be hard to
+                    replace, you can try to be irreplaceable by pursuing certain fields
+                    that are sometimes deemed unfit for AI. This is not due to its
+                    technical difficulty, but its need for the human factor.
+                    Entrepreneurs, Teachers, Lawyers, Psychiatrist, Waiters. These jobs
+                    require physical human interaction and offline work, which is hard
+                    for AI to do. Also, plumbers, construction workers, vehicle
+                    repairers, these also require physical work, but more effort or
+                    strength is needed, which protects you from the AI models in the
+                    cloud. I say all this with the caveat that humanoids might one day
+                    replace these jobs too, but it will take much longer.
+                </p>
+            </li>
+            <li dir="ltr">
+                <p dir="ltr">
+                    3. Utilize the AI now and accumulate wealth <br/>
+                    Most companies right now are not using AIs as direct employees,
+                    though some are already trying. What you can do between the now and
+                    the age of full bloom AI is to utilize the current AI to amplify
+                    your ability now. Automate some of your workflows, utilize the
+                    chatbots to enhance your work, achieve better results than others
+                    that are not using the LLMs (Large Language Models, the chatbots).
+                    Ideally, this will earn you a raise, promotion, or a better job
+                    offer, as your performance will be augmented by AI while others
+                    going about their work just the same as before. The companies are
+                    not using AIs to do their work now, but you can. This is not to
+                    encourage you to spend less time at work since AI can do a good
+                    enough job, it is encouraging you to use it to better your
+                    performance and differentiate yourself from others. You will be
+                    arbitraging the fact that AI has not yet been adopted by the
+                    enterprise world, but you had. You have until wide scale adoption of
+                    AI agents from the companies and replacing humans instead of hiring
+                    humans using AIs.
+                </p>
+            </li>
+            <li dir="ltr">
+                <p dir="ltr">
+                    4. Invest in the companies that profit from AI adoptions <br/>
+                    Don’t invest in the first big brand technology company name that
+                    comes to mind. What we are trying to do here is to hedge against the
+                    chance of losing your job to AIs. What will it mean when that
+                    happens? AI agents will become good enough and cost effective enough
+                    for companies to start firing employees and replacing them with AIs.
+                    They won’t do this because they love technology, but because from a
+                    cost analysis standpoint, they will be saving a lot of money and
+                    still get the work done. They won’t need to pay for salaries,
+                    employee insurances, or office rent. What they’ll need to pay for is
+                    the fees for running the AI, possibly to an AI service provider, or
+                    the cost of constructing a data center and service themselves. So,
+                    in order to hedge against this, we need to also profit from this
+                    transformation. Think about companies that will benefit from
+                    deploying AI agents as their workforce, the companies that will save
+                    lots of costs from this deployment. The considerations here would be
+                    how much work this company is doing can benefit from AI agents?
+                    Better yet, What company will benefit if my category of jobs gets
+                    replaced? If you are very certain that your job will be replaced in
+                    your company, see if your company will benefit in this kind of
+                    situation and invest in them, this will be the most direct hedge for
+                    losing your job to AI. But investing in your own company entails
+                    risk of its own. If your company is on a downtrend or goes bankrupt,
+                    both your salaries and investments are gone. Do a bit of research on
+                    the essence of the stock market and the companies that will benefit
+                    from this kind of situation, then allocate your assets according to
+                    that.
+                </p>
+            </li>
+        </ol>
+        <br/>
+        <p dir="ltr">
+            The days of the majority of humans getting replaced may still be far away,
+            but rest assured that it is indeed gradually coming to reality. Some jobs
+            will be easier to replace and get replaced first, then as the AI models keep
+            getting better and better, more will lose their income. This is not to be
+            pessimistic and negative about the future. No, I’m quite thrilled about it
+            actually. This is a warning for what is to come, based on observations of
+            technological history and enterprise decision making. The goal of this
+            article is to convince the reader to accept the possibility of losing their
+            jobs to AI and prepare accordingly. The internet and mobile both started
+            mainly around the 2000s, and twenty years later, look at where we are, how
+            fast we progressed. My view is that technology will only progress faster
+            with all the prior technological advancements we made. I wish you the best
+            and hey, thanks for reading.
+        </p>
+
+        </div>
+      </div>
+    </div>
+  </article>
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <p>© Bitwise, 2025. All rights reserved.</p>
+</footer>
+</body>
+</html>
