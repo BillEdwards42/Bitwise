@@ -5,7 +5,8 @@
 // Load article data from JSON file
 async function loadArticlesData() {
   try {
-    const response = await fetch('/assets/data/articles.json');
+    // Use relative path instead of absolute path to work with GitHub Pages
+    const response = await fetch('assets/data/articles.json');
     if (!response.ok) {
       throw new Error('Failed to load articles data');
     }
