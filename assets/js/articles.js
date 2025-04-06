@@ -5,8 +5,16 @@
 // Load article data from JSON file
 async function loadArticlesData() {
   try {
-    // Use relative path instead of absolute path to work with GitHub Pages
-    const response = await fetch('assets/data/articles.json');
+    // Get the base URL path for the current site
+    let basePath = document.location.pathname.split('/').slice(0, -1).join('/');
+    if (!basePath.endsWith('/')) {
+      basePath += '/';
+    }
+    
+    // Build the complete path to the JSON file
+    const jsonPath = `${basePath}assets/data/articles.json`;
+    
+    const response = await fetch(jsonPath);
     if (!response.ok) {
       throw new Error('Failed to load articles data');
     }
@@ -15,7 +23,20 @@ async function loadArticlesData() {
     return data.articles || [];
   } catch (error) {
     console.error('Error loading articles:', error);
-    return [];
+    // Fallback to hardcoded article data for testing
+    return [
+      {
+        "id": "the-inevitable",
+        "title": "The inevitable",
+        "date": "February 12, 2025",
+        "author": "Bill Edwards",
+        "year": 2025,
+        "excerpt": "Exploring the inevitable rise of AI and its impact on jobs and society.",
+        "imagePath": "assets/images/A_new_generation.jpg",
+        "articlePath": "assets/articles/The_inevitable.html",
+        "tags": ["technology", "ai", "future"]
+      }
+    ];
   }
 }
 

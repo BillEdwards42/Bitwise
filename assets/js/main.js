@@ -170,85 +170,11 @@ function setupArticleFiltering(searchInput, yearDropdown) {
 }
 
 /****************************************************
- * STAR ANIMATION
+ * STAR ANIMATION - DISABLED
  ****************************************************/
 function setupStarAnimation(starCanvas) {
-  if (!starCanvas) return;
-  
-  let spawnTimeoutId = null;
-  let animationFrameId = null;
-  let ctx = null;
-  let activeStar = null;
-
-  function initStarCanvas() {
-    ctx = starCanvas.getContext('2d');
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    scheduleNextStar();
-    animateStar();
-  }
-
-  function resizeCanvas() {
-    starCanvas.width = window.innerWidth;
-    starCanvas.height = window.innerHeight;
-  }
-
-  function scheduleNextStar() {
-    // 5-8 minutes range
-    const minDelay = 5 * 60 * 1000;
-    const maxDelay = 8 * 60 * 1000;
-    const delay = Math.random() * (maxDelay - minDelay) + minDelay;
-    
-    spawnTimeoutId = setTimeout(() => {
-      if (isDarkMode()) spawnStar();
-      scheduleNextStar();
-    }, delay);
-  }
-
-  function spawnStar() {
-    if (activeStar) return;
-    
-    const x = Math.random() * starCanvas.width;
-    const y = Math.random() * starCanvas.height;
-    const angle = Math.random() * 2 * Math.PI;
-    const speed = 0.5 + Math.random() * 0.5;
-    
-    activeStar = { x, y, radius: 2, angle, speed };
-  }
-
-  function animateStar() {
-    animationFrameId = requestAnimationFrame(animateStar);
-    if (!ctx) return;
-    
-    ctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
-
-    if (!isDarkMode() || !activeStar) {
-      activeStar = null;
-      return;
-    }
-    
-    // Update star position
-    activeStar.x += Math.cos(activeStar.angle) * activeStar.speed;
-    activeStar.y += Math.sin(activeStar.angle) * activeStar.speed;
-
-    // Draw star
-    ctx.beginPath();
-    ctx.arc(activeStar.x, activeStar.y, activeStar.radius, 0, 2 * Math.PI);
-    ctx.fillStyle = "#fff";
-    ctx.fill();
-
-    // Remove star if it flies off-canvas
-    if (
-      activeStar.x < -10 || 
-      activeStar.x > starCanvas.width + 10 ||
-      activeStar.y < -10 ||
-      activeStar.y > starCanvas.height + 10
-    ) {
-      activeStar = null;
-    }
-  }
-
-  initStarCanvas();
+  // Star animation disabled
+  return;
 }
 
 /****************************************************

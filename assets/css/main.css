@@ -194,6 +194,7 @@ a:focus, button:focus, input:focus, textarea:focus, select:focus {
   height: 100%;
   z-index: -1;
   pointer-events: none;
+  display: none; /* Hide star canvas */
 }
 
 /* ----------------------------------------
