@@ -1,0 +1,15 @@
+{
+  "articles": [
+    {
+      "id": "the-inevitable",
+      "title": "The inevitable",
+      "date": "February 12, 2025",
+      "author": "Bill Edwards",
+      "year": 2025,
+      "excerpt": "Exploring the inevitable rise of AI and its impact on jobs and society.",
+      "imagePath": "assets/images/A_new_generation.jpg",
+      "articlePath": "assets/articles/The_inevitable.html",
+      "tags": ["technology", "ai", "future"]
+    }
+  ]
+}

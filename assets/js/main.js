@@ -1,36 +1,43 @@
 /****************************************************
- * DEBUG UTILITY
+ * UTILITY FUNCTIONS
  ****************************************************/
+// Debug logger
 function debugLog(...args) {
   console.log("[DEBUG]", ...args);
 }
 
+// Local storage utilities
+const STORAGE_KEYS = {
+  THEME: 'blogTheme',
+  SIDEBAR: 'sidebarState'
+};
+
+const THEME = {
+  DARK: 'dark',
+  LIGHT: 'light'
+};
+
+const SIDEBAR = {
+  COLLAPSED: 'collapsed',
+  EXPANDED: 'expanded'
+};
+
 /****************************************************
- * SIDEBAR UTILS
+ * SIDEBAR UTILITIES
  ****************************************************/
 function isSidebarCollapsed() {
-  return localStorage.getItem('sidebarState') === 'collapsed';
+  return localStorage.getItem(STORAGE_KEYS.SIDEBAR) === SIDEBAR.COLLAPSED;
 }
+
 function setSidebarCollapsed(collapsed) {
-  localStorage.setItem('sidebarState', collapsed ? 'collapsed' : 'expanded');
+  localStorage.setItem(STORAGE_KEYS.SIDEBAR, collapsed ? SIDEBAR.COLLAPSED : SIDEBAR.EXPANDED);
 }
 
 /****************************************************
- * DARK MODE UTILS
+ * DARK MODE UTILITIES
  ****************************************************/
 function isDarkMode() {
-  return document.documentElement.classList.contains('dark-mode');
-}
-function setDarkMode(dark) {
-  if (dark) {
-    document.documentElement.classList.remove('light-mode');
-    document.documentElement.classList.add('dark-mode');
-    localStorage.setItem('bitwiseTheme','dark');
-  } else {
-    document.documentElement.classList.remove('dark-mode');
-    document.documentElement.classList.add('light-mode');
-    localStorage.setItem('bitwiseTheme','light');
-  }
+  return true; // Always return true as we're always in dark mode
 }
 
 function getMoonIconPath() {
@@ -47,6 +54,7 @@ function getMoonIconPath() {
     />
   `;
 }
+
 function getSunIconPath() {
   return `
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -61,140 +69,56 @@ function getSunIconPath() {
 }
 
 /****************************************************
- * DOMContentLoaded => attach listeners
+ * ARTICLE FILTERING
  ****************************************************/
-document.addEventListener('DOMContentLoaded', () => {
-  debugLog("DOM fully loaded. Attempting to attach event listeners...");
-
-  const modeToggle       = document.getElementById('modeToggle');
-  const modeIcon         = document.getElementById('modeIcon');
-  const sidebarToggleBtn = document.getElementById('sidebarToggle');
-  const sortButton       = document.getElementById('sortButton');
-  const searchInput      = document.getElementById('searchInput');
-  const yearDropdown     = document.getElementById('yearDropdown');
-  const starCanvas       = document.getElementById('starCanvas');
-
-  debugLog("modeToggle =", modeToggle);
-  debugLog("modeIcon   =", modeIcon);
-  debugLog("sidebarToggleBtn =", sidebarToggleBtn);
-
-  /****************************************************
-   * DARK MODE INIT
-   ****************************************************/
-  if (modeIcon) {
-    modeIcon.innerHTML = isDarkMode() ? getMoonIconPath() : getSunIconPath();
-  }
-  if (modeToggle) {
-    modeToggle.addEventListener('click', () => {
-      setDarkMode(!isDarkMode());
-      if (modeIcon) {
-        modeIcon.innerHTML = isDarkMode()
-          ? getMoonIconPath()
-          : getSunIconPath();
-      }
-    });
-  }
-
-  /****************************************************
-   * SIDEBAR COLLAPSE - DEFAULT ON PHONES IF UNSAVED
-   ****************************************************/
-  let savedSidebar = localStorage.getItem('sidebarState');
-  // If no state is saved, decide default based on screen width
-  if (!savedSidebar) {
-    if (window.innerWidth < 768) {
-      // On smaller screens => default collapsed
-      document.body.classList.add('sidebar-collapsed');
-      if (sidebarToggleBtn) {
-        sidebarToggleBtn.classList.remove('sidebar-open');
-        sidebarToggleBtn.classList.add('sidebar-closed');
-      }
-      setSidebarCollapsed(true);
-    } else {
-      // Otherwise => default expanded
-      document.body.classList.remove('sidebar-collapsed');
-      if (sidebarToggleBtn) {
-        sidebarToggleBtn.classList.add('sidebar-open');
-        sidebarToggleBtn.classList.remove('sidebar-closed');
-      }
-      setSidebarCollapsed(false);
-    }
-  }
-
-  // Now, sync button classes (in case localStorage indicated collapsed/expanded)
-  if (sidebarToggleBtn) {
-    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-    if (isCollapsed) {
-      sidebarToggleBtn.classList.add('sidebar-closed');
-      sidebarToggleBtn.classList.remove('sidebar-open');
-    } else {
-      sidebarToggleBtn.classList.add('sidebar-open');
-      sidebarToggleBtn.classList.remove('sidebar-closed');
-    }
-
-    // Attach click toggle
-    sidebarToggleBtn.addEventListener('click', () => {
-      const nowCollapsed = document.body.classList.contains('sidebar-collapsed');
-      if (nowCollapsed) {
-        // Expand
-        document.body.classList.remove('sidebar-collapsed');
-        sidebarToggleBtn.classList.remove('sidebar-closed');
-        sidebarToggleBtn.classList.add('sidebar-open');
-        setSidebarCollapsed(false);
-      } else {
-        // Collapse
-        document.body.classList.add('sidebar-collapsed');
-        sidebarToggleBtn.classList.remove('sidebar-open');
-        sidebarToggleBtn.classList.add('sidebar-closed');
-        setSidebarCollapsed(true);
-      }
-    });
-  }
-
-  /****************************************************
-   * YEAR FILTER
-   ****************************************************/
+function setupArticleFiltering(searchInput, yearDropdown) {
   let selectedYear = null;
 
-  // This function hides/shows articles based on search + year
+  // Filter articles based on search text and selected year
   function filterArticles() {
     const articles = document.querySelectorAll('.article-item');
-    if (!articles) return;
+    if (!articles.length) return;
 
     const query = (searchInput?.value || "").trim().toLowerCase();
 
     articles.forEach(article => {
-      const dataYear  = parseInt(article.getAttribute('data-year'), 10);
-      const titleEl   = article.querySelector('h2');
+      const dataYear = parseInt(article.getAttribute('data-year'), 10);
+      const titleEl = article.querySelector('h2');
+      
+      // Match search query
       let matchSearch = true;
-      let matchYear   = true;
-
-      // match search
       if (query) {
         const titleText = titleEl?.textContent.toLowerCase() || "";
         matchSearch = titleText.includes(query);
       }
-      // match year
+      
+      // Match year filter
+      let matchYear = true;
       if (selectedYear !== null) {
         matchYear = (dataYear === selectedYear);
       }
+      
+      // Show/hide based on combined criteria
       article.style.display = (matchSearch && matchYear) ? "" : "none";
     });
   }
 
-  // Populate the dropdown with available years
+  // Populate the year dropdown with available years
   function populateYearDropdown() {
     if (!yearDropdown) return;
     yearDropdown.innerHTML = "";
 
     const articles = document.querySelectorAll('.article-item');
     const years = new Set();
+    
     articles.forEach(article => {
-      const y = parseInt(article.getAttribute('data-year'), 10);
-      if (!isNaN(y)) years.add(y);
+      const year = parseInt(article.getAttribute('data-year'), 10);
+      if (!isNaN(year)) years.add(year);
     });
-    const uniqueYears = Array.from(years).sort((a, b) => b - a);
-
-    // "All Years"
+    
+    const uniqueYears = Array.from(years).sort((a, b) => b - a); // Newest first
+    
+    // Add "All Years" option
     const allLabel = document.createElement('label');
     allLabel.textContent = "All Years";
     const allRadio = document.createElement('input');
@@ -209,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     allLabel.prepend(allRadio);
     yearDropdown.appendChild(allLabel);
 
+    // Add each year as a radio option
     uniqueYears.forEach(year => {
       const label = document.createElement('label');
       label.textContent = year;
@@ -230,50 +155,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Funnel-based toggle for the year filter
-  const sortBtn = sortButton;
-  if (sortBtn) {
-    sortBtn.addEventListener('click', () => {
-      const articlesOnThisPage = document.querySelectorAll('.article-item');
-      if (!articlesOnThisPage || articlesOnThisPage.length === 0) {
-        alert("Filtering only works on the homepage. Please return to the homepage to search or filter.");
-        return;
-      }
-      if (!yearDropdown) return;
-
-      // Toggle yearDropdown's visibility
-      if (yearDropdown.style.display === "none") {
-        populateYearDropdown();
-        yearDropdown.style.display = "block";
-      } else {
-        yearDropdown.style.display = "none";
-      }
-    });
-  }
-
-  // Default: keep the filter collapsed
-  // => Do NOT call populateYearDropdown() here automatically
-  // => Do NOT set yearDropdown.style.display = "block"
-  // We'll let the funnel button handle the toggling
-
-  // But do handle searching right away
+  // Set up search input
   if (searchInput) {
     searchInput.addEventListener('input', filterArticles);
   }
 
-  // Also filter any articles based on default states
+  // Run initial filtering
   filterArticles();
 
-  /****************************************************
-   * STAR ANIMATION
-   ****************************************************/
-  let spawnTimeoutId   = null;
+  return {
+    filterArticles,
+    populateYearDropdown
+  };
+}
+
+/****************************************************
+ * STAR ANIMATION
+ ****************************************************/
+function setupStarAnimation(starCanvas) {
+  if (!starCanvas) return;
+  
+  let spawnTimeoutId = null;
   let animationFrameId = null;
-  let ctx              = null;
-  let activeStar       = null;
+  let ctx = null;
+  let activeStar = null;
 
   function initStarCanvas() {
-    if (!starCanvas) return;
     ctx = starCanvas.getContext('2d');
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -282,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function resizeCanvas() {
-    starCanvas.width  = window.innerWidth;
+    starCanvas.width = window.innerWidth;
     starCanvas.height = window.innerHeight;
   }
 
@@ -291,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const minDelay = 5 * 60 * 1000;
     const maxDelay = 8 * 60 * 1000;
     const delay = Math.random() * (maxDelay - minDelay) + minDelay;
+    
     spawnTimeoutId = setTimeout(() => {
       if (isDarkMode()) spawnStar();
       scheduleNextStar();
@@ -299,42 +207,134 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function spawnStar() {
     if (activeStar) return;
+    
     const x = Math.random() * starCanvas.width;
     const y = Math.random() * starCanvas.height;
     const angle = Math.random() * 2 * Math.PI;
     const speed = 0.5 + Math.random() * 0.5;
-    activeStar = { x, y, radius:2, angle, speed };
+    
+    activeStar = { x, y, radius: 2, angle, speed };
   }
 
   function animateStar() {
     animationFrameId = requestAnimationFrame(animateStar);
     if (!ctx) return;
-    ctx.clearRect(0,0, starCanvas.width, starCanvas.height);
+    
+    ctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
 
     if (!isDarkMode() || !activeStar) {
       activeStar = null;
       return;
     }
-    activeStar.x += Math.cos(activeStar.angle)*activeStar.speed;
-    activeStar.y += Math.sin(activeStar.angle)*activeStar.speed;
+    
+    // Update star position
+    activeStar.x += Math.cos(activeStar.angle) * activeStar.speed;
+    activeStar.y += Math.sin(activeStar.angle) * activeStar.speed;
 
+    // Draw star
     ctx.beginPath();
-    ctx.arc(activeStar.x, activeStar.y, activeStar.radius, 0, 2*Math.PI);
-    ctx.fillStyle="#fff";
+    ctx.arc(activeStar.x, activeStar.y, activeStar.radius, 0, 2 * Math.PI);
+    ctx.fillStyle = "#fff";
     ctx.fill();
 
     // Remove star if it flies off-canvas
     if (
       activeStar.x < -10 || 
-      activeStar.x > starCanvas.width+10 ||
+      activeStar.x > starCanvas.width + 10 ||
       activeStar.y < -10 ||
-      activeStar.y > starCanvas.height+10
+      activeStar.y > starCanvas.height + 10
     ) {
       activeStar = null;
     }
   }
 
   initStarCanvas();
+}
 
-  debugLog("All event listeners attached successfully.");
+/****************************************************
+ * INITIALIZE WHEN DOM IS LOADED
+ ****************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  debugLog("DOM loaded. Initializing blog components...");
+
+  // Get DOM elements
+  const elements = {
+    modeToggle: document.getElementById('modeToggle'),
+    modeIcon: document.getElementById('modeIcon'),
+    sidebarToggleBtn: document.getElementById('sidebarToggle'),
+    sortButton: document.getElementById('sortButton'),
+    searchInput: document.getElementById('searchInput'),
+    yearDropdown: document.getElementById('yearDropdown'),
+    starCanvas: document.getElementById('starCanvas')
+  };
+
+  // Dark mode is always on, no toggle needed
+
+  // Handle sidebar state - default to collapsed on small screens
+  let savedSidebar = localStorage.getItem(STORAGE_KEYS.SIDEBAR);
+  
+  // If no state is saved, decide default based on screen width
+  if (!savedSidebar) {
+    const isSmallScreen = window.innerWidth < 768;
+    setSidebarCollapsed(isSmallScreen);
+    
+    if (isSmallScreen) {
+      document.body.classList.add('sidebar-collapsed');
+      if (elements.sidebarToggleBtn) {
+        elements.sidebarToggleBtn.classList.remove('sidebar-open');
+        elements.sidebarToggleBtn.classList.add('sidebar-closed');
+      }
+    } else {
+      document.body.classList.remove('sidebar-collapsed');
+      if (elements.sidebarToggleBtn) {
+        elements.sidebarToggleBtn.classList.add('sidebar-open');
+        elements.sidebarToggleBtn.classList.remove('sidebar-closed');
+      }
+    }
+  }
+
+  // Set toggle functionality (we don't need to set classes anymore as CSS handles this)
+  if (elements.sidebarToggleBtn) {
+    // Add toggle functionality
+    elements.sidebarToggleBtn.addEventListener('click', () => {
+      const nowCollapsed = document.body.classList.contains('sidebar-collapsed');
+      
+      // Toggle state
+      document.body.classList.toggle('sidebar-collapsed', !nowCollapsed);
+      
+      // Save state to localStorage
+      setSidebarCollapsed(!nowCollapsed);
+    });
+  }
+
+  // Set up article filtering
+  const filtering = setupArticleFiltering(elements.searchInput, elements.yearDropdown);
+
+  // Set up year filter toggle button
+  if (elements.sortButton && elements.yearDropdown) {
+    // Initialize the year dropdown if we're on the homepage
+    const articlesOnThisPage = document.querySelectorAll('.article-item');
+    if (articlesOnThisPage && articlesOnThisPage.length > 0) {
+      // We're on the homepage, initialize the dropdown with data
+      filtering.populateYearDropdown();
+    }
+    
+    elements.sortButton.addEventListener('click', () => {
+      const articlesOnThisPage = document.querySelectorAll('.article-item');
+      
+      if (!articlesOnThisPage || articlesOnThisPage.length === 0) {
+        alert("Filtering only works on the homepage. Please return to the homepage to search or filter.");
+        return;
+      }
+      
+      // Toggle dropdown visibility
+      const isVisible = elements.yearDropdown.style.display !== "none";
+      elements.yearDropdown.style.display = isVisible ? "none" : "block";
+    });
+  }
+
+  // Initialize star animation for aesthetic effect
+  setupStarAnimation(elements.starCanvas);
+
+  debugLog("Blog initialization complete.");
 });

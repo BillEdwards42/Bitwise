@@ -1,6 +1,3 @@
-<!-- git add
-git commit -m "Update"
-git push -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,237 +11,85 @@ git push -->
     type="image/png"
   />
 
-  <!-- Font Awesome (optional icons) -->
+  <!-- Font Awesome (for icons) -->
   <link 
     rel="stylesheet" 
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
   />
 
-  <!-- Orbitron font -->
+  <!-- Fonts -->
   <link 
     rel="preconnect" 
     href="https://fonts.gstatic.com" 
     crossorigin 
   />
   <link 
-    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" 
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" 
     rel="stylesheet"
   />
 
-  <title>Bitwise Blog</title>
+  <title>Bill Edwards' Blog</title>
 
-  <!-- Dark Mode snippet modifies <html> based on localStorage or defaults to dark -->
+  <!-- Always use dark mode -->
   <script>
     (function() {
-      const savedTheme = localStorage.getItem('bitwiseTheme') || 'dark';
-      if (savedTheme === 'dark') {
-        document.documentElement.className = 'dark-mode';
-      } else {
-        document.documentElement.className = 'light-mode';
-      }
+      // Force dark mode
+      document.documentElement.className = 'dark-mode';
     })();
   </script>
 </head>
 <body>
-<!-- 1) Guarantee <body> exists, then run sidebar script -->
+<!-- Sidebar state initialization -->
 <script>
   (function() {
-    const savedSidebar = localStorage.getItem('sidebarState') || 'expanded';
-    const toggleBtnId = "sidebarToggle";
-
-    if (savedSidebar === 'collapsed') {
-      // Collapsed: set body class
-      document.body.classList.add('sidebar-collapsed');
-
-      // Try to set the button state now...
-      const btn = document.getElementById(toggleBtnId);
-      if (btn) {
-        btn.classList.add('sidebar-closed');
-        btn.classList.remove('sidebar-open');
-      } else {
-        // Fallback if button not yet in DOM
-        document.addEventListener('DOMContentLoaded', () => {
-          const b = document.getElementById(toggleBtnId);
-          if (b) {
-            b.classList.add('sidebar-closed');
-            b.classList.remove('sidebar-open');
-          }
-        });
-      }
-    } else {
-      // expanded
-      document.body.classList.remove('sidebar-collapsed');
-      const btn = document.getElementById(toggleBtnId);
-      if (btn) {
-        btn.classList.add('sidebar-open');
-        btn.classList.remove('sidebar-closed');
-      } else {
-        document.addEventListener('DOMContentLoaded', () => {
-          const b = document.getElementById(toggleBtnId);
-          if (b) {
-            b.classList.add('sidebar-open');
-            b.classList.remove('sidebar-closed');
-          }
-        });
-      }
-    }
+    const STORAGE_KEYS = {
+      THEME: 'blogTheme',
+      SIDEBAR: 'sidebarState'
+    };
+    
+    const SIDEBAR = {
+      COLLAPSED: 'collapsed',
+      EXPANDED: 'expanded'
+    };
+    
+    // Always set sidebar to collapsed when loading a new page
+    const sidebarState = SIDEBAR.COLLAPSED;
+    
+    // Force collapsed state in localStorage
+    localStorage.setItem(STORAGE_KEYS.SIDEBAR, sidebarState);
+    const isCollapsed = true; // Always collapsed
+    
+    // Set body class based on state
+    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
+    
+    // Set the sidebar state in localStorage to match what we're displaying
+    localStorage.setItem(STORAGE_KEYS.SIDEBAR, isCollapsed ? SIDEBAR.COLLAPSED : SIDEBAR.EXPANDED);
+    
+    // No need to set button classes as our CSS now handles the button state
+    // based on the body class
   })();
 </script>
 
-<!-- 2) main.js -->
+<!-- Load core JS and CSS -->
 <script src="assets/js/main.js"></script>
-
-<!-- 3) main.css -->
+<script src="assets/js/articles.js"></script>
 <link rel="stylesheet" href="assets/css/main.css" />
 
-<!-- Star Canvas -->
+<!-- Star Canvas Background -->
 <canvas id="starCanvas"></canvas>
 
-<!-- Site Header -->
-<header class="site-header">
-  <h1 class="site-title"><a href="index.html">Bitwise</a></h1>
-  <h2 class="site-subtitle">& | ^ ~</h2>
-</header>
-
-<!-- Dark Mode Toggle Button -->
-<button id="modeToggle" class="mode-toggle-btn">
-  <svg 
-    id="modeIcon"
-    xmlns="http://www.w3.org/2000/svg"
-    class="icon-24"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke-width="1.5"
-    stroke="currentColor"
-  ></svg>
-</button>
-
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-  <div class="search-filter-container">
-    <div class="search-row">
-      <div class="search-container">
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="Search articles..."
-          aria-label="Search"
-        />
-      </div>
-    </div>
-  </div>
-
-  <div 
-    id="yearDropdown" 
-    class="year-dropdown" 
-    style="display: none;"
-  ></div>
-
-  <div class="top-bar">
-    <h3 class="top-bar-left">By Bill Edwards</h3>
-    <button 
-      id="sortButton" 
-      type="button" 
-      class="sort-btn" 
-      aria-label="Filter Articles"
-    >
-      <!-- funnel icon -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="icon-24 filter-icon"
-      >
-        <path 
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M10.5 6h3m-7.5
-             0h-.75A2.25 2.25 0
-             003 8.25v.678c0
-             .414.162.81.452
-             1.103l5.098 5.098
-             c.291.291.45.687.45
-             1.1v2.271a1.125
-             1.125 0 001.688
-             .974l2.25-1.35a1.125
-             1.125 0 00.537-.974v-1.621
-             c0-.414.162-.81.452
-             -1.103l5.098-5.098
-             c.29-.294.452-.69.452
-             -1.103V8.25a2.25
-             2.25 0 00-2.25-2.25H6z"
-        />
-      </svg>
-    </button>
-  </div>
-
-  <!-- Moved everything down with a margin-top wrapper -->
-  <div style="margin-top: 2rem;">
-    <nav class="extra-links">
-      <h3>Account</h3>
-      <ul>
-        <li><a href="#">Not done yet</a></li>
-      </ul>
-      <h3>More</h3>
-      <ul>
-        <li><a href="https://billedwards42.github.io/Bill_Edwards/">About Bill</a></li>
-        <li><a href="https://twitter.com/CashPrinter3000">X</a></li>
-      </ul>
-      <!-- Description Section Below "More" -->
-      <h3>Description</h3>
-      <p>
-        This site is to record the thoughts of Bill Edwards. Doesn't worth much because he knows jack shit.
-      </p>
-    </nav>
-  </div>
-</aside>
-
-<!-- Sidebar Toggle Button -->
-<button 
-  id="sidebarToggle" 
-  class="sidebar-toggle-btn sidebar-open" 
-  aria-label="Collapse Sidebar"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none" 
-    viewBox="0 0 24 24" 
-    stroke-width="1.5" 
-    stroke="currentColor"
-    class="icon-24"
-  >
-    <path 
-      stroke-linecap="round" 
-      stroke-linejoin="round" 
-      d="M15.75 19.5 8.25 12l7.5-7.5"
-    />
-  </svg>
-</button>
+<!-- Dynamic components -->
+<script src="assets/includes/header.js"></script>
+<script src="assets/includes/sidebar.js"></script>
 
 <!-- Main Content -->
 <main class="main-content" id="mainContent">
-  <section class="articles-section">
-    <!-- Article 2 -->
-    <div class="article-item" data-year="2025">
-      <a 
-        href="assets/articles/The_inevitable.html"
-        class="article-link"
-      >
-        <img 
-          src="assets/images/A_new_generation.jpg" 
-          alt="A new generation" 
-        />
-        <h2>The inevitable</h2>
-      </a>
-    </div>
+  <section class="articles-section" id="articles">
+    <!-- Articles will be loaded dynamically via JavaScript -->
   </section>
 </main>
 
 <!-- Footer -->
-<footer class="site-footer">
-  <p>© Bitwise, 2025. All rights reserved.</p>
-</footer>
+<script src="assets/includes/footer.js"></script>
 </body>
 </html>
